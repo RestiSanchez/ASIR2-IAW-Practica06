@@ -24,7 +24,9 @@ cp /home/ubuntu/ASIR2-IAW-Practica06/default /etc/nginx/sites-available/default
 # Copiamos la configuracion de php-fpm
 cp /home/ubuntu/ASIR2-IAW-Practica06/www.conf /etc/php/7.4/fpm/pool.d/www.conf
 
-
+# Reiniciamos los servicios
+systemctl restart php7.4-fpm
+systemctl restart nginx
 
 
 # Cambiamos al directorio inicial
