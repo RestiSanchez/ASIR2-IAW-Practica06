@@ -28,6 +28,41 @@ cp /home/ubuntu/ASIR2-IAW-Practica06/www.conf /etc/php/7.4/fpm/pool.d/www.conf
 systemctl restart php7.4-fpm
 systemctl restart nginx
 
+############
+#PhpMyAdmin#
+############
+
+IP_MYSQL=
+
+
+#Instalamos la utilidad unzip para descomprimir el codigo fuente
+
+apt install unzip -y
+
+#Descargamos el código fuente de phpMyAdmin del repositorio oficial
+
+cd /home/ubuntu
+
+rm -rf phpMyAdmin-5.0.4-all-languages.zip
+
+wget https://files.phpmyadmin.net/phpMyAdmin/5.0.4/phpMyAdmin-5.0.4-all-languages.zip
+
+# Descomprimimos el archivo
+unzip phpMyAdmin-5.0.4-all-languages.zip
+
+# Borramos el .zip
+rm -rf phpMyAdmin-5.0.4-all-languages.zip
+
+# Movemos el directorio de phpMyadmin
+mv phpMyAdmin-5.0.4-all-languages/ /var/www/html/phpmyadmin
+
+#Configuramos el archivo config.inc.php
+cd /var/www/html/phpmyadmin
+
+mv config.sample.inc.php config.inc.php
+
+sed -i "s/localhost/$IP_MYSQL/" /var/www/html/phpmyadmin/config.inc.php
+
 
 # Cambiamos al directorio inicial
 cd /home/ubuntu
