@@ -6,7 +6,7 @@ server {
 
         index index.php index.html index.htm index.nginx-debian.html;
 
-        server_name _;
+        servername ;
 
         location / {
                 # First attempt to serve request as file, then
@@ -14,17 +14,15 @@ server {
                 try_files $uri $uri/ =404;
         }
 
-        # pass PHP scripts to FastCGI server
-        #
-        location ~ \.php$ {
+        location ~ .php$ {
                 include snippets/fastcgi-php.conf;
-                # With php-cgi (or other tcp sockets):
-                fastcgi_pass 127.0.0.1:9000;
+                # With php7.4-fpm:
+                fastcgi_pass unix:/run/php/php7.4-fpm.sock;
         }
 
         # deny access to .htaccess files, if Apache's document root
         # concurs with nginx's one
-        location ~ /\.ht {
+        location ~ /.ht {
                 deny all;
         }
 }
