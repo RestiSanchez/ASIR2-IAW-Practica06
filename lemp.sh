@@ -29,6 +29,7 @@ apt-get install php-fpm php-mysql -y
 
 # Configuración de php-fpm
 sed -i "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/" /etc/php/7.4/fpm/php.ini
+cp www.conf /etc/php/7.4/fpm/pool.d/
 
 # Reiniciamos el servicio
 systemctl restart php7.4-fpm
@@ -38,6 +39,7 @@ cp default /etc/nginx/sites-available/
 
 # Reiniciamos el servicio de nginx
 systemctl restart nginx
+
 
 ###########################################
 ######   Instalación aplicación web  ######
