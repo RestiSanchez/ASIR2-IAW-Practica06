@@ -7,7 +7,7 @@ HTTPASSWD_DIR=/home/ubuntu
 HTTPASSWD_USER=usuario
 HTTPASSWD_PASSWD=usuario
 # IP Servidor MySQL
-IP_PRIVADA=172.31.27.177
+IP_PRIVADA=172.31.29.99
 
 
 #######################################
