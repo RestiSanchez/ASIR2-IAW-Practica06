@@ -80,6 +80,7 @@ rm -rf /var/www/html/phpmyadmin
 mv phpMyAdmin-5.0.4-all-languages /var/www/html/phpmyadmin
 
 # Copiamos el config.inc.php al directorio
+cd /home/ubuntu/ASIR2-IAW-Practica06
 cp config.inc.php /var/www/html/phpmyadmin/
 
 # Cambiamos permisos de /var/www/html
