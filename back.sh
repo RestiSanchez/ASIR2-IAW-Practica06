@@ -30,10 +30,5 @@ git clone https://github.com/josejuansanchez/iaw-practica-lamp
 mysql -u root <<< "ALTER USER 'root'@'localhost' IDENTIFIED WITH caching_sha2_password BY '$DB_ROOT_PASSWD';"
 mysql -u root -p$DB_ROOT_PASSWD <<< "FLUSH PRIVILEGES;"
 
-# Creamos usuario para la aplicación web y asignamos privilegios
-# mysql -u root -p$DB_ROOT_PASSWD <<< "CREATE USER 'lamp_user'@'%' IDENTIFIED BY '$DB_USU_PASSWD';"
-# mysql -u root -p$DB_ROOT_PASSWD <<< "GRANT ALL PRIVILEGES ON 'lamp_db'.* TO 'lamp_user'@'%';"
-# mysql -u root -p$DB_ROOT_PASSWD <<< "FLUSH PRIVILEGES;"
-
 # Introducimos la base de tados
 mysql -u root -p$DB_ROOT_PASSWD < /home/ubuntu/iaw-practica-lamp/db/database.sql
