@@ -1,88 +1,97 @@
 #!/bin/bash
-
-
-# Variables
-# Definimos la ruta donde vamos a guardar el archivo .htpasswd
-HTTPASSWD_DIR=/home/ubuntu
-HTTPASSWD_USER=usuario
-HTTPASSWD_PASSWD=usuario
-# IP Servidor MySQL
-IP_PRIVADA=172.31.29.99
-
-
-#######################################
-######   Instalación pila LEMP   ######
-#######################################
-
-
-# Habilitamos el modo de shell para mostrar los comandos que se ejecutan
 set -x
 
 # Actualizamos la lista de paquetes
-apt-get update
+apt update 
 
-# Instalamos el servidor web Apache -y le decimos que si
-apt-get install nginx -y
+#Instalación NGINX
+sudo apt-get install nginx -y
 
-# Instalamos los módulos necesarios de PHP
+# Instalamos el MySQL Server
+apt install mysql-server -y
+
+# Definimos la contraseña root de MySQL
+BD_ROOT_PASSWD=root
+
+# Actualizamos la contraseña de root de MySQL
+mysql -u root <<< "ALTER USER 'root'@'localhost' IDENTIFIED WITH caching_sha2_password BY '$BD_ROOT_PASSWD';"
+mysql -u root <<< "FLUSH PRIVILEGES;"
+
+# Instalamos los módulos de PHP
 apt-get install php-fpm php-mysql -y
 
-# Configuración de php-fpm
+#Configuración de php-fpm
 sed -i "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/" /etc/php/7.4/fpm/php.ini
-cp www.conf /etc/php/7.4/fpm/pool.d/
 
-# Reiniciamos el servicio
+#Reiniciamos
 systemctl restart php7.4-fpm
 
-# Copiamos el archivo de configuración
-cp default /etc/nginx/sites-available/
+#Renombramos y movemos
+mv /var/www/html/index.nginx-debian.html nginx.html
+mv nginx.html /var/www/html
 
-# Reiniciamos el servicio de nginx
+#Configuramos NGINX para usar php.fpm
+cd /home/ubuntu
+cp /home/ubuntu/ASIR2-IAW-Practica06/default /etc/nginx/sites-available/default
+cp /home/ubuntu/ASIR2-IAW-Practica06/info.php /var/www/html
 systemctl restart nginx
 
 
-###########################################
-######   Instalación aplicación web  ######
-###########################################
+########################################
+#   PhpMyAdmin y Adminer
+########################################
 
+#-------------- Otras herramientas -----------------------#
 
-# Clonamos el repositorio de la aplicación
-cd /var/www/html 
-rm -rf iaw-practica-lamp 
-git clone https://github.com/josejuansanchez/iaw-practica-lamp
+# INSTALACIÓN ADMINER
+# Creamos carpeta
+sudo mkdir /var/www/html/Adminer
+# Nos movemos a esta ruta
+cd /var/www/html/Adminer
 
-# Movemos el contenido del repositorio al home de html
-mv /var/www/html/iaw-practica-lamp/src/*  /var/www/html/
+# Instalamos herramientas adicionales
+wget https://github.com/vrana/adminer/releases/download/v4.7.7/adminer-4.7.7-mysql.php
 
-# Configuramos el archivo php de la aplicacion
-sed -i "s/localhost/$IP_PRIVADA/" /var/www/html/config.php
+# Renombrar el archivo Adminer
+mv adminer-4.7.7-mysql.php index.php
 
-# Eliminamos el archivo Index.html de nginx
-rm -rf /var/www/html/index.html
-rm -rf /var/www/html/iaw-practica-lamp/
-
-# Instalamos unzip
+# INSTALACIÓN DE PHPMYADMIN
 apt install unzip -y
 
-# Instalación de Phpmyadmin
-cd /home/ubuntu
-rm -rf phpMyAdmin-5.0.4-all-lenguages.zip
+#Descargamos el código fuente de phpMyAdmin
+cd /home/Ubuntu
+rm -rf phpMyAdmin-5.0.4-all-languages.zip
 wget https://files.phpmyadmin.net/phpMyAdmin/5.0.4/phpMyAdmin-5.0.4-all-languages.zip
 
-# Descomprimimos 
+#Descomprimimos el archivo .zip
 unzip phpMyAdmin-5.0.4-all-languages.zip
 
-# Borramos el archivo .zip
+#Borramos el archivo .zip
 rm -rf phpMyAdmin-5.0.4-all-languages.zip
-rm -rf /var/www/html/phpmyadmin
 
-# Movemos la carpeta al directorio
-mv phpMyAdmin-5.0.4-all-languages /var/www/html/phpmyadmin
+#Movemos el directorio de phpMyAdmin al directorio /var/www/html
+mv phpMyAdmin-5.0.4-all-languages/ /var/www/html/phpmyadmin
 
-# Copiamos el config.inc.php al directorio
-cd /home/ubuntu/ASIR2-IAW-Practica06
-cp config.inc.php /var/www/html/phpmyadmin/
 
-# Cambiamos permisos de /var/www/html
+# --------------------------------------------------------------------------------
+# Instalamos la aplicación web
+# --------------------------------------------------------------------------------
+
+# Clonamos el repositorio
 cd /var/www/html
+rm -rf iaw-practica-lamp
+git clone https://github.com/josejuansanchez/iaw-practica-lamp
+mv /var/www/html/iaw-practica-lamp/src/* /var/www/html/
+
+# Importamos el script de creación de la base de datos
+mysql -u root -p$BD_ROOT_PASSWD  < /var/www/html/iaw-practica-lamp/db/database.sql
+
+# Eliminamos contenido que no sea útil
+rm -rf /var/www/html/index.html
+rm -rf /var/www/html/iaw-practica-lamp
+
+#Cambiamos los permisos
 chown www-data:www-data * -R
+
+#Reiniciamos nginx
+systemctl restart nginx
